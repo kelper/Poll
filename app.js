@@ -51,7 +51,7 @@ app.get('/create', function(req, res) {
 });
 
 app.post('/create', function(req, res) {
-  PollModel.createPoll({
+  PollModel.save({
     title: req.param('title'),
     description: req.param('description')
   }, function(error, docs) {
@@ -60,7 +60,7 @@ app.post('/create', function(req, res) {
 });
 
 app.get('/poll/:id', function(req, res) {
-  PollModel.findPollByID(req.param('id'), function(error, poll) {
+  PollModel.findById(req.param('id'), function(error, poll) {
     res.render('show', {
       locals: {
         title: poll.title,
@@ -71,7 +71,7 @@ app.get('/poll/:id', function(req, res) {
 });
 
 app.get('/poll/:id/edit', function(req, res) {
-  PollModel.findPollByID(req.param('id'), function(error, poll) {
+  PollModel.findById(req.param('id'), function(error, poll) {
     res.render('edit', {
       locals: {
         title: poll.title,
@@ -82,13 +82,13 @@ app.get('/poll/:id/edit', function(req, res) {
 });
 
 app.post('/poll/:id/edit', function(req, res) {
-  PollModel.updatePollbyID(req.param('id'), req.body, function(error, poll) {
+  PollModel.updateById(req.param('id'), req.body, function(error, poll) {
     res.redirect('/');
   });
 });
 
 app.post('/poll/:id/comments/create', function(req, res) {
-  PollModel.addCommentToPoll(req.param('id'), {
+  PollModel.addComment(req.param('id'), {
     body: req.body.body,
     created_at: new Date()
   }, function(error, docs) {

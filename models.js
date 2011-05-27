@@ -21,8 +21,8 @@ var Poll = new Schema({
   description : { type: String, required: true },
   choices: [Choice],
   comments: [Comment],
-  votes : Number,
-  created_at : Date
+  votes : { type: Number, default: 0 },
+  created_at : { type: Number, default: Date.now }
 });
 
 mongoose.model('Poll', Poll);
@@ -31,15 +31,15 @@ var Poll = mongoose.model('Poll');
 PollModel = function(){};
 
 // Get all Polls
-PollModel.prototype.findAllPolls = function (callback) {
-  PollModel.find({}, function (err, polls) {
+PollModel.prototype.findPolls = function (callback) {
+  Poll.find({}, function (err, polls) {
     callback(null, polls)
   });
 };
 
 // Get Poll by ID
-PollModel.prototype.findPollByID = function (id, callback) {
-  PollModel.findPollByID(id, function (err, poll) {
+PollModel.prototype.findById = function (id, callback) {
+  Poll.findById(id, function (err, poll) {
       if (!err) {
         callback(null, poll);
       }
@@ -47,8 +47,8 @@ PollModel.prototype.findPollByID = function (id, callback) {
 };
 
 // Update Poll by ID
-PollModel.prototype.updatePollByID = function (id, body, callback) {
-  PollModel.findPollByID(id, function (err, poll) {
+PollModel.prototype.updateById = function (id, body, callback) {
+  Poll.findById(id, function (err, poll) {
     if (!err) {
       poll.description = body.description;
       poll.save(function (err) {
@@ -58,8 +58,8 @@ PollModel.prototype.updatePollByID = function (id, body, callback) {
   });
 };
 
-// Save a new Poll
-PollModel.prototype.createPoll = function (params, callback) {
+// Create a new Poll
+PollModel.prototype.save = function (params, callback) {
   var poll = new Poll( {title: params['title'], description: params['description'], created_at: new Date()} );
   poll.save(function (err) {
     callback();
@@ -67,8 +67,8 @@ PollModel.prototype.createPoll = function (params, callback) {
 };
 
 // Add comment to Poll
-PollModel.prototype.addCommentToPoll = function (pollID, comment, callback) {
-  this.findPollByID(pollID, function(error, poll) {
+PollModel.prototype.addComment = function (pollID, comment, callback) {
+  this.findById(pollID, function(error, poll) {
     if (error) {
       callback(error);
     } else {
