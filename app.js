@@ -30,15 +30,18 @@ app.configure('production', function(){
 
 // Include Models
 
-var PollModel = require('./models').PollModel;
+var pollModel = new (require('./models').PollModel);
 
 // Routes
 
 app.get('/', function(req, res){
-  res.render('index', {
-  locals: {
-    title: 'Index Page'
-  }
+  pollModel.findAll(function(error, polls) {
+    res.render('index', {
+      locals: {
+        title: 'Index Page',
+        polls: polls
+      }   
+    });
   });
 });
 
@@ -51,7 +54,7 @@ app.get('/create', function(req, res) {
 });
 
 app.post('/create', function(req, res) {
-  PollModel.save({
+  pollModel.save({
     title: req.param('title'),
     description: req.param('description')
   }, function(error, docs) {
@@ -60,7 +63,7 @@ app.post('/create', function(req, res) {
 });
 
 app.get('/poll/:id', function(req, res) {
-  PollModel.findById(req.param('id'), function(error, poll) {
+  pollModel.findById(req.param('id'), function(error, poll) {
     res.render('show', {
       locals: {
         title: poll.title,
@@ -71,7 +74,7 @@ app.get('/poll/:id', function(req, res) {
 });
 
 app.get('/poll/:id/edit', function(req, res) {
-  PollModel.findById(req.param('id'), function(error, poll) {
+  pollModel.findById(req.param('id'), function(error, poll) {
     res.render('edit', {
       locals: {
         title: poll.title,
@@ -82,13 +85,13 @@ app.get('/poll/:id/edit', function(req, res) {
 });
 
 app.post('/poll/:id/edit', function(req, res) {
-  PollModel.updateById(req.param('id'), req.body, function(error, poll) {
+  pollModel.updateById(req.param('id'), req.body, function(error, poll) {
     res.redirect('/');
   });
 });
 
 app.post('/poll/:id/comments/create', function(req, res) {
-  PollModel.addComment(req.param('id'), {
+  pollModel.addComment(req.param('id'), {
     body: req.body.body,
     created_at: new Date()
   }, function(error, docs) {

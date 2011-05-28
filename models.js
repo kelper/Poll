@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/db');
+mongoose.connect('mongodb://localhost/polldb');
 
 var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
@@ -27,11 +27,26 @@ var Poll = new Schema({
 
 mongoose.model('Poll', Poll);
 var Poll = mongoose.model('Poll');
+var testPoll = new Poll();
+testPoll.title = "This is a title";
+testPoll.description = "Lalalala description here!";
+
+testPoll.save(function(err) {
+  if (err) {
+    throw err;
+  }
+  console.log('saved');
+  Poll.find({}, function (err, polls) {
+    polls.forEach(function(poll) {
+      console.log(poll.title);
+    });
+  });
+});
 
 PollModel = function(){};
 
 // Get all Polls
-PollModel.prototype.findPolls = function (callback) {
+PollModel.prototype.findAll = function (callback) {
   Poll.find({}, function (err, polls) {
     callback(null, polls)
   });
@@ -60,8 +75,14 @@ PollModel.prototype.updateById = function (id, body, callback) {
 
 // Create a new Poll
 PollModel.prototype.save = function (params, callback) {
-  var poll = new Poll( {title: params['title'], description: params['description'], created_at: new Date()} );
+  var poll = new Poll({
+    title: params['title'],
+    description: params['description'],
+    created_at: new Date()
+  });
+  console.log("The title of the new object is: " + poll.title);
   poll.save(function (err) {
+    if (err) console.log("We have an error.");
     callback();
   });
 };
