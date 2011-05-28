@@ -32,8 +32,11 @@ app.configure('production', function(){
 
 var pollModel = new (require('./models').PollModel);
 
-// Routes
+/*
+ * Routes
+ */
 
+// Index
 app.get('/', function(req, res){
   pollModel.findAll(function(error, polls) {
     res.render('index', {
@@ -45,6 +48,7 @@ app.get('/', function(req, res){
   });
 });
 
+// Create Poll (page) 
 app.get('/create', function(req, res) {
   res.render('create', {
     locals: {
@@ -53,6 +57,7 @@ app.get('/create', function(req, res) {
   }); 
 });
 
+// Create Poll (on submit)
 app.post('/create', function(req, res) {
   pollModel.save({
     title: req.param('title'),
@@ -62,6 +67,7 @@ app.post('/create', function(req, res) {
   });
 });
 
+// Poll
 app.get('/poll/:id', function(req, res) {
   pollModel.findById(req.param('id'), function(error, poll) {
     res.render('show', {
@@ -73,6 +79,7 @@ app.get('/poll/:id', function(req, res) {
   });
 });
 
+// Edit Poll
 app.get('/poll/:id/edit', function(req, res) {
   pollModel.findById(req.param('id'), function(error, poll) {
     res.render('edit', {
@@ -84,12 +91,14 @@ app.get('/poll/:id/edit', function(req, res) {
   });
 });
 
+// Edit Poll (on submit)
 app.post('/poll/:id/edit', function(req, res) {
   pollModel.updateById(req.param('id'), req.body, function(error, poll) {
     res.redirect('/');
   });
 });
 
+// Create Comment (on submit)
 app.post('/poll/:id/comments/create', function(req, res) {
   pollModel.addComment(req.param('id'), {
     body: req.body.body,
@@ -103,5 +112,5 @@ app.post('/poll/:id/comments/create', function(req, res) {
 
 if (!module.parent) {
   app.listen(3000);
-  console.log("Express server listening on port %d", app.address().port);
+  console.log("Express server running on port %d", app.address().port);
 }

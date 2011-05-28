@@ -8,7 +8,7 @@ var Comment = new Schema({
   author : String,
   body : { type: String, required: true },
   votes : Number,
-  created_at : { type: Date, default: Date.now }
+  created_at : { type: Date, default: new Date() }
 });
 
 var Choice = new Schema({
@@ -22,26 +22,11 @@ var Poll = new Schema({
   choices: [Choice],
   comments: [Comment],
   votes : { type: Number, default: 0 },
-  created_at : { type: Number, default: Date.now }
+  created_at : { type: Date, default: new Date() }
 });
 
 mongoose.model('Poll', Poll);
 var Poll = mongoose.model('Poll');
-var testPoll = new Poll();
-testPoll.title = "This is a title";
-testPoll.description = "Lalalala description here!";
-
-testPoll.save(function(err) {
-  if (err) {
-    throw err;
-  }
-  console.log('saved');
-  Poll.find({}, function (err, polls) {
-    polls.forEach(function(poll) {
-      console.log(poll.title);
-    });
-  });
-});
 
 PollModel = function(){};
 
@@ -78,7 +63,6 @@ PollModel.prototype.save = function (params, callback) {
   var poll = new Poll({
     title: params['title'],
     description: params['description'],
-    created_at: new Date()
   });
   console.log("The title of the new object is: " + poll.title);
   poll.save(function (err) {
